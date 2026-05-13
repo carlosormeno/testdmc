@@ -42,4 +42,28 @@ jobs:
         with:
           name: sql-package
           path: D:/a/testdmc/testdmc/PROYECTOBD/artifacts/**/*.dacpac
-          
+
+  deploy:
+      runs-on: windows-2025-vs2026
+      needs: build # IMPORTANTE: Espera a que el job de build termine con éxito
+      
+      steps:
+        # 1. Descargar el artefacto generado en el paso anterior
+        - name: Download Dacpac
+          uses: actions/download-artifact@v4
+          with:
+            name: sql-package
+            path: ./downloaded-dacpac
+  
+        # 2. Desplegar a Azure SQL
+        - name: Azure SQL Deploy
+          uses: Azure/sql-action@v2
+          with:
+            # Usa un secreto para tu cadena de conexión
+            connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+            
+            # Ruta donde se descargó el archivo
+            path: './downloaded-dacpac/PROYECTOBD.dacpac'
+            
+            # 'Publish' aplica los cambios del dacpac a la base de datos real
+            action: 'Publish'
