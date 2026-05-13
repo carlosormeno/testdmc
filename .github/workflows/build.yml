@@ -22,7 +22,7 @@ jobs:
       - name: Configurar .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x' # Asegura compatibilidad con .slnx
+          dotnet-version: '10.0.x' # Asegura compatibilidad con .slnx
 
       - name: Configurar MSBuild
         uses: microsoft/setup-msbuild@v2
