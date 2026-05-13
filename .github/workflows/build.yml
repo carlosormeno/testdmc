@@ -1,0 +1,44 @@
+name: Build Azure SQL Dacpac
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      # Ajusta la ruta a tu archivo .slnx
+      SOLUTION_PATH: "PROYECTOBD/PROYECTOBD.slnx"
+      BUILD_CONFIGURATION: Release
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x' # Asegura compatibilidad con .slnx
+
+      - name: Configurar MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restaurar dependencias
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+      - name: Compilar Proyecto SQL (Generar Dacpac)
+        run: |
+          msbuild ${{ env.SOLUTION_PATH }} `
+            /p:Configuration=${{ env.BUILD_CONFIGURATION }} `
+            /p:OutDir=./artifacts/ `
+            /t:Build
+
+      - name: Archivar el Dacpac
+        uses: actions/upload-artifact@v4
+        with:
+          name: sql-package
+          path: ./artifacts/**/*.dacpac
