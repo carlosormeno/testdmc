@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
 
     env:
       # Ajusta la ruta a tu archivo .slnx
@@ -36,7 +36,6 @@ jobs:
             /p:Configuration=${{ env.BUILD_CONFIGURATION }} `
             /p:OutDir=./artifacts/ `
             /t:Build
-            /v:diag
 
       - name: Archivar el Dacpac
         uses: actions/upload-artifact@v4
